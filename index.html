@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+</head>
+<body>
+
+      <div id="app">
+        {{ message }}
+          <br>
+          <button type = "button" id = "get-joke" @click = "fetchAPIData">next</button>
+
+            <div v-if = "responseAvailable == true">
+
+                <hr>
+                <p>
+
+                <h3>US Headlines</h3>
+                <br>
+                <br>
+                <img id="theimage" src={{result}}  width="500px" height="500px">
+                {{result}}
+
+                </p>
+                <hr>
+
+            </div>
+      </div>
+
+
+<script>
+var app = new Vue({
+      el: '#app',
+      data: {
+           message: 'Hello Vue!',
+           result : [],
+           image: " ",
+           ApiKey: "f0d28a4d90524260bcbe604c73ddce21",
+           responseAvailable: false,
+
+      },
+    methods: {
+        fetchAPIData( ) {
+
+
+            var url = 'https://newsapi.org/v2/top-headlines?' +
+                      'country=us&' +
+                      'apiKey=f0d28a4d90524260bcbe604c73ddce21';
+            var req = new Request(url);
+
+
+            fetch(req)
+
+                .then(response => {
+                if(response.ok){
+                    return response.json()
+                } else{
+                    alert("Server returned " + response.status + " : " + response.statusText);
+                }
+            })
+
+            .then(response => {
+                this.responseAvailable = true;
+            for (let i = 0; i < response.articles.length ; i++) {
+
+
+                this.result[i] = response.articles[i].urlToImage;
+            document.getElementById('theimage').src = this.result[i]
+
+
+            }
+            //     this.result = response.articles[0].urlToImage;
+            //     document.getElementById('theimage').src = this.result
+            })
+
+
+            .catch(err => {
+                console.log(err);
+            });
+
+            }
+        }
+    })
+</script>
+
+
+</body>
+</html>
