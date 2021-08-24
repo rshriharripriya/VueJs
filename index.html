@@ -3,6 +3,7 @@
 <head>
   <title>My first Vue app</title>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
 
@@ -17,9 +18,11 @@
                 <p>
 
                 <h3>US Headlines</h3>
+                 <div id="imageContainer"></div>
                 <br>
                 <br>
-                <img id="theimage" src={{result}}  width="500px" height="500px">
+
+<!--                <img id="theimage" src={{result}}  width="500px" height="500px">-->
                 {{result}}
 
                 </p>
@@ -35,7 +38,8 @@ var app = new Vue({
       data: {
            message: 'Hello Vue!',
            result : [],
-           image: " ",
+
+          totalimg : 0,
            ApiKey: "f0d28a4d90524260bcbe604c73ddce21",
            responseAvailable: false,
 
@@ -44,9 +48,7 @@ var app = new Vue({
         fetchAPIData( ) {
 
 
-            var url = 'https://newsapi.org/v2/top-headlines?' +
-                      'country=us&' +
-                      'apiKey=f0d28a4d90524260bcbe604c73ddce21';
+            var url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=f0d28a4d90524260bcbe604c73ddce21";
             var req = new Request(url);
 
 
@@ -62,17 +64,43 @@ var app = new Vue({
 
             .then(response => {
                 this.responseAvailable = true;
-            for (let i = 0; i < response.articles.length ; i++) {
+                this.totalimg = response.totalResults;
+                console.log(this.totalimg);
+
+                for (let i = 0; i < response.articles.length; i++) {
+                //     if (response.articles[i] === null || response.articles[i] === undefined )
+                //     {
+                //     //     this.result[i] = response.articles[i].urlToImage ;
+                //     // console.log(i,this.result[i]);
+                //     }
+                //     else {
+                        this.result[i] = response.articles[i].urlToImage ;
+                    console.log(i,this.result[i]);
+                    // }
+
+                }
+                     var imgs = this.result;
+                    console.log(imgs);
+                    var container = document.getElementById("imageContainer");
+                    var docFrag = document.createDocumentFragment();
+                    imgs.forEach(function (cur, index, arr) {
+                        var img = document.createElement('img');
+                        img.src = cur;
+                        img.style.height = "200px";
+                        img.style.width = "200px";
+                        img.style.padding = "5px";
+
+                        docFrag.appendChild(img);
+                    });
+
+                    if ( docFrag != null ) {
+                            container.appendChild(docFrag);
+                    }
 
 
-                this.result[i] = response.articles[i].urlToImage;
-            document.getElementById('theimage').src = this.result[i]
 
-
-            }
-            //     this.result = response.articles[0].urlToImage;
-            //     document.getElementById('theimage').src = this.result
             })
+
 
 
             .catch(err => {
