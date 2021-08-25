@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,16 +6,14 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
      <script src="https://unpkg.com/vueperslides"></script>
     <script src="script.js" defer></script>
-      <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
 
       <div id="app">
         {{ message }}
-          {{fetchAPIData(0)}}
+          {{fetchAPIData()}}
             <br>
-          <button type = "button" v-for="i in 3" @click = "fetchAPIData(i)" >next</button>
+          <button type = "button" id = "get-joke" v-for="i in 4" :key="i" @click = "fetchAPIData+i.toString()" v-for="i in 4" :key="i">next</button>
 
             <div v-if = "responseAvailable == true">
 
@@ -43,21 +42,20 @@ var app = new Vue({
 
            message: 'Hello Vue!',
            result : [],
-          ApiKey: "f0d28a4d90524260bcbe604c73ddce21",
           url : ["https://newsapi.org/v2/top-headlines?country=us&apiKey=ccce50aa989b4957bdb23afbab32ad3b",
             "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=ccce50aa989b4957bdb23afbab32ad3b",
             "https://newsapi.org/v2/top-headlines?country=de&category=business&apiKey=ccce50aa989b4957bdb23afbab32ad3b",
             "https://newsapi.org/v2/top-headlines?q=trump&apiKey=ccce50aa989b4957bdb23afbab32ad3b"],
 
           totalimg : 0,
-
+           ApiKey: "f0d28a4d90524260bcbe604c73ddce21",
            responseAvailable: false,
 
       },
     methods: {
-        fetchAPIData(k) {
+        fetchAPIData( ) {
 
-            var req = new Request(this.url[k]);
+            var req = new Request(this.url[0]);
 
 
 
@@ -91,9 +89,7 @@ var app = new Vue({
                      var imgs = this.result;
                     console.log(imgs);
                     var container = document.getElementById("imageContainer");
-
                     var docFrag = document.createDocumentFragment();
-
                     imgs.forEach(function (cur, index, arr) {
                         var img = document.createElement('img');
                         img.src = cur;
@@ -104,14 +100,18 @@ var app = new Vue({
                         img.onerror = function() {
                             this.style.display = 'none';
                         }
+
+
+                        // img.onerror = this.parentNode.removeChild(this);
+
                         docFrag.appendChild(img);
                     });
 
                     if ( docFrag != null ) {
                             container.appendChild(docFrag);
-
                     }
-                console.log(container);
+
+
 
             })
 
