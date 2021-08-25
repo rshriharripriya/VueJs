@@ -3,27 +3,27 @@
 <head>
   <title>My first Vue app</title>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+     <script src="https://unpkg.com/vueperslides"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
 
       <div id="app">
         {{ message }}
-          <br>
-          <button type = "button" id = "get-joke" @click = "fetchAPIData">next</button>
+          {{fetchAPIData()}}
+            <br>
+          <button type = "button" id = "get-joke" v-for="i in 4" :key="i" @click = "fetchAPIData+i.toString()" v-for="i in 4" :key="i">next</button>
 
             <div v-if = "responseAvailable == true">
 
                 <hr>
                 <p>
 
+
                 <h3>US Headlines</h3>
                  <div id="imageContainer"></div>
                 <br>
                 <br>
-
-<!--                <img id="theimage" src={{result}}  width="500px" height="500px">-->
-                {{result}}
 
                 </p>
                 <hr>
@@ -33,11 +33,18 @@
 
 
 <script>
+
 var app = new Vue({
-      el: '#app',
+
+         el: '#app',
       data: {
+
            message: 'Hello Vue!',
            result : [],
+          url : ["https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=f0d28a4d90524260bcbe604c73ddce21",
+            "https://newsapi.org/v2/top-headlines?country=us&apiKey=f0d28a4d90524260bcbe604c73ddce21",
+            "https://newsapi.org/v2/top-headlines?country=de&category=business&apiKey=f0d28a4d90524260bcbe604c73ddce21",
+            "https://newsapi.org/v2/top-headlines?q=trump&apiKey=f0d28a4d90524260bcbe604c73ddce21"],
 
           totalimg : 0,
            ApiKey: "f0d28a4d90524260bcbe604c73ddce21",
@@ -47,9 +54,8 @@ var app = new Vue({
     methods: {
         fetchAPIData( ) {
 
+            var req = new Request(this.url[0]);
 
-            var url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=f0d28a4d90524260bcbe604c73ddce21";
-            var req = new Request(url);
 
 
             fetch(req)
@@ -68,15 +74,15 @@ var app = new Vue({
                 console.log(this.totalimg);
 
                 for (let i = 0; i < response.articles.length; i++) {
-                //     if (response.articles[i] === null || response.articles[i] === undefined )
-                //     {
-                //     //     this.result[i] = response.articles[i].urlToImage ;
-                //     // console.log(i,this.result[i]);
-                //     }
-                //     else {
+                    if (response.articles[i].urlToImage !== null && response.articles[i] !== undefined )
+                    {
                         this.result[i] = response.articles[i].urlToImage ;
                     console.log(i,this.result[i]);
-                    // }
+                    }
+                // //     else {
+                //         this.result[i] = response.articles[i].urlToImage ;
+                //     console.log(i,this.result[i]);
+                //     // }
 
                 }
                      var imgs = this.result;
@@ -89,6 +95,13 @@ var app = new Vue({
                         img.style.height = "200px";
                         img.style.width = "200px";
                         img.style.padding = "5px";
+                        // img.alt = " ";
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                        }
+
+
+                        // img.onerror = this.parentNode.removeChild(this);
 
                         docFrag.appendChild(img);
                     });
@@ -102,12 +115,15 @@ var app = new Vue({
             })
 
 
-
             .catch(err => {
                 console.log(err);
             });
 
             }
+
+
+
+
         }
     })
 </script>
