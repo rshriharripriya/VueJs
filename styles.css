@@ -1,9 +1,13 @@
 body {
   font-family: Poppins;
+  /*background-color: azure;*/
   font-size: 1rem;
   line-height: 1.6;
-  background-color: #fff;
+  background-color: rgba(15, 14, 15, 0.93);
   color: #333;
+}
+button{
+  border-radius: 80px;
 }
 /*.container {*/
 /*  max-width: 1100px;*/

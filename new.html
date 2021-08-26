@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="stylesheet" href="C:\Users\rshri\PycharmProjects\vuejs\styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+       <script src="script.js" defer></script>
+    <title>vuejs</title>
+</head>
+<body>
+    <div id="root">
+
+
+        {{ message }}
+
+        <step-wizard>
+     <tab name="Headlines in the US" :selected="true" type = "button"  >
+
+         {{fetchAPIData1()}}
+         <br>
+            <div v-if = "responseAvailable == true">
+                <hr>
+                <p>
+                <div id="imageContainer1"></div>
+
+               </p>
+                <hr>
+            </div>
+     </tab>
+
+     <tab name="BBC News Headlines" >
+
+                  {{fetchAPIData2( )}}
+
+
+            <div v-if = "responseAvailable == true">
+
+                <hr>
+                <p>
+
+                <div id="imageContainer2"></div>
+
+               </p>
+                <hr>
+
+            </div>
+
+     </tab>
+     <tab name="Top Business Headlines from Germany">
+
+                  {{fetchAPIData3( )}}
+
+
+            <div v-if = "responseAvailable == true">
+
+                <hr>
+                <p>
+
+                <div id="imageContainer3"></div>
+
+               </p>
+                <hr>
+
+            </div>
+
+     </tab>
+      <tab name="Top Trump Headlines">
+           Top Trump Headlines
+                   {{fetchAPIData4( )}}
+
+            <div v-if = "responseAvailable == true">
+
+                <hr>
+                <p>
+
+                <div id="imageContainer4"></div>
+                               </p>
+                <hr>
+
+            </div>
+
+     </tab>
+</step-wizard>
+
+      </div>
+
+
+
+    <script>
+        Vue.component('step-wizard',{
+
+            template:`<div>
+<br/>
+
+                <button type = "button"  @click="changeTab(--currentActive) "  v-if="currentActive > 0">Previous</button>
+                <button type = "button"  @click="changeTab(++currentActive)" v-if="currentActive < totalTabs - 1">Next</button>
+                <button type = "button"  v-if="currentActive === totalTabs -1" @click="changeTab(currentActive = 0); " >Back to top</button>
+
+                <div class="tab-details" style="display: block">
+                    <slot></slot>
+                </div>
+
+
+            </div>`,
+
+            data(){
+                return{
+                    tabs: [],
+                    currentActive: 0,
+                    totalTabs: 0,
+                }
+            },
+
+            created(){
+                this.tabs = this.$children;
+
+            },
+
+
+            mounted(){
+                this.totalTabs = this.tabs.length;
+            },
+
+
+            methods:{
+                changeTab(makeTabActive){
+                    this.tabs.forEach(tab => {
+                       tab.isActive = false;
+
+                    });
+
+                    this.tabs[makeTabActive].isActive = true;
+                },
+            }
+        });
+
+        Vue.component('tab',{
+            template: `<div v-show="isActive"><h3>{{name}}</h3><slot></slot></div>`,
+
+            props: {
+                name:{required: true},
+                selected: { default: false}
+            },
+
+            data(){
+                return{
+                    isActive: false
+                }
+            },
+
+            created(){
+                this.isActive = this.selected
+            }
+        })
+
+        let app = new Vue({
+            el: '#root',
+            data: {
+           message: 'Hello Vue!',
+           result : [],
+                totalimg : 0,
+           ApiKey: "ccce50aa989b4957bdb23afbab32ad3b",
+           responseAvailable: false,
+
+      },
+    methods: {
+        fetchAPIData1( ) {
+            var url = "https://newsapi.org/v2/top-headlines?country=us&apiKey="+this.ApiKey;
+            var req = new Request(url);
+            fetch(req)
+
+                .then(response => {
+                if(response.ok){
+                    return response.json()
+                } else{
+                    alert("Server returned " + response.status + " : " + response.statusText);
+                }
+            })
+
+            .then(response => {
+                this.responseAvailable = true;
+                this.totalimg = response.totalResults;
+
+                for (let i = 0; i < response.articles.length; i++) {
+                    if (response.articles[i].urlToImage !== null && response.articles[i] !== undefined )
+                    {
+                        this.result[i] = response.articles[i].urlToImage ;
+                    }
+                            }
+                    var imgs = this.result;
+                    var container = document.getElementById("imageContainer1");
+                    var docFrag = document.createDocumentFragment();
+                    imgs.forEach(function (cur, index, arr)
+                    {
+                        var img = document.createElement('img');
+                        img.src = cur;
+                        img.style.height = "200px";
+                        img.style.width = "200px";
+                        img.style.padding = "5px";
+                        img.onerror = function()
+                        {
+                            this.style.display = 'none';
+                        }
+                    docFrag.appendChild(img);
+                    });
+
+                    if ( docFrag != null )
+                    {
+                            container.appendChild(docFrag);
+
+
+                    }
+                    container.removeChild(docFrag);
+
+
+            })
+
+            .catch(err => {
+                console.log(err);
+            });
+
+            },
+        fetchAPIData2( ) {
+            var url = "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey="+this.ApiKey;
+            var req = new Request(url);
+
+            fetch(req)
+
+                .then(response => {
+                if(response.ok){
+                    return response.json()
+                } else{
+                    alert("Server returned " + response.status + " : " + response.statusText);
+                }
+            })
+
+            .then(response => {
+                this.responseAvailable = true;
+                this.totalimg = response.totalResults;
+
+                for (let i = 0; i < response.articles.length; i++)
+                {
+                    if (response.articles[i].urlToImage !== null && response.articles[i] !== undefined )
+                    {
+                        this.result[i] = response.articles[i].urlToImage ;
+
+                    }
+                }
+                    var imgs = this.result;
+                    var container = document.getElementById("imageContainer2");
+                    var docFrag = document.createDocumentFragment();
+                    imgs.forEach(function (cur, index, arr)
+                    {
+                        var img = document.createElement('img');
+                        img.src = cur;
+                        img.style.height = "200px";
+                        img.style.width = "200px";
+                        img.style.padding = "5px";
+                        // img.alt = " ";
+                        img.onerror = function()
+                        {
+                            this.style.display = 'none';
+                        }
+                    docFrag.appendChild(img);
+                    });
+
+                    if ( docFrag != null ) {
+                            container.appendChild(docFrag);
+
+
+                    }
+                    container.removeChild(docFrag);
+
+
+            })
+
+
+            .catch(err => {
+                console.log(err);
+            });
+
+            },
+        fetchAPIData3( ) {
+            var url = "https://newsapi.org/v2/top-headlines?country=de&category=business&apiKey="+this.ApiKey;
+            var req = new Request(url);
+
+            fetch(req)
+                .then(response => {
+                if(response.ok){
+                    return response.json()
+                } else{
+                    alert("Server returned " + response.status + " : " + response.statusText);
+                }
+            })
+
+            .then(response => {
+                this.responseAvailable = true;
+                this.totalimg = response.totalResults;
+                for (let i = 0; i < response.articles.length; i++) {
+                    if (response.articles[i].urlToImage !== null && response.articles[i] !== undefined )
+                    {
+                        this.result[i] = response.articles[i].urlToImage ;
+
+                    }
+                }
+                    var imgs = this.result;
+                    var container = document.getElementById("imageContainer3");
+                    var docFrag = document.createDocumentFragment();
+                    imgs.forEach(function (cur, index, arr)
+                    {
+                        var img = document.createElement('img');
+                        img.src = cur;
+                        img.style.height = "200px";
+                        img.style.width = "200px";
+                        img.style.padding = "5px";
+                        img.onerror = function()
+                        {
+                            this.style.display = 'none';
+                        }
+                        docFrag.appendChild(img);
+                    });
+                    if ( docFrag != null )
+                    {
+                            container.appendChild(docFrag);
+                    }
+                    container.removeChild(docFrag);
+            })
+
+            .catch(err => {
+                console.log(err);
+            });
+
+            },
+        fetchAPIData4( ) {
+            var url = "https://newsapi.org/v2/top-headlines?q=trump&apiKey="+this.ApiKey;
+            var req = new Request(url);
+
+            fetch(req)
+
+                .then(response => {
+                if(response.ok){
+                    return response.json()
+                } else{
+                    alert("Server returned " + response.status + " : " + response.statusText);
+                }
+            })
+
+            .then(response => {
+                this.responseAvailable = true;
+                this.totalimg = response.totalResults;
+
+                for (let i = 0; i < response.articles.length; i++)
+                {
+                    if (response.articles[i].urlToImage !== null && response.articles[i] !== undefined )
+                    {
+                        this.result[i] = response.articles[i].urlToImage ;
+
+                    }
+
+                }
+                    var imgs = this.result;
+                    var container = document.getElementById("imageContainer4");
+                    var docFrag = document.createDocumentFragment();
+                    imgs.forEach(function (cur, index, arr)
+                    {
+                        var img = document.createElement('img');
+                        img.src = cur;
+                        img.style.height = "200px";
+                        img.style.width = "200px";
+                        img.style.padding = "5px";
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                        }
+                    docFrag.appendChild(img);
+                    });
+                    if ( docFrag != null )
+                    {        container.appendChild(docFrag);
+                   }
+                     container.removeChild(docFrag);
+            })
+
+            .catch(err => {
+                console.log(err);
+            });
+
+            },
+
+        }
+    });
+    </script>
+
+</body>
+</html>
